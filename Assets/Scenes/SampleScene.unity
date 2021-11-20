@@ -434,7 +434,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.3679245, g: 0.3616773, b: 0.23429155, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -494,6 +494,7 @@ GameObject:
   - component: {fileID: 706576853}
   - component: {fileID: 706576852}
   - component: {fileID: 706576851}
+  - component: {fileID: 706576856}
   m_Layer: 0
   m_Name: Bunny
   m_TagString: Untagged
@@ -535,9 +536,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.0008203387, y: -0.1361326}
+  m_Offset: {x: 0.043454647, y: -0.16810828}
   serializedVersion: 2
-  m_Radius: 0.1652714
+  m_Radius: 0.19724745
 --- !u!114 &706576853
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -550,9 +551,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 643233c43774c704bb6e5602ef782bcd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 1
-  aggroRange: 2
-  currentTarget: {fileID: 0}
+  moveSpeed: 5
+  awareRange: 5
+  attackRange: 2
+  minFidgetTimer: 0.5
+  maxFidgetTimer: 3
+  myState: 0
 --- !u!212 &706576854
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -612,12 +616,31 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 706576850}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.1, y: -2.87, z: 0}
+  m_LocalPosition: {x: 6.44, y: -2.87, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &706576856
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 706576850}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: be347e46e1e62e94aa8b972927983a28, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1335397058
 GameObject:
   m_ObjectHideFlags: 0
