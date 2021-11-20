@@ -28,6 +28,8 @@ public class Bunny : MonoBehaviour
 
     private void CheckForCharacters()
     {
+        
+        if (currentTarget != null) { return; }
         RaycastHit2D foundTarget = Physics2D.Raycast(transform.position, Vector2.left, aggroRange);
         if (foundTarget == false) 
         {
@@ -42,7 +44,11 @@ public class Bunny : MonoBehaviour
     {
         if (currentTarget == null) { return; }
         var distanceToTarget = Vector2.Distance(transform.position, currentTarget.gameObject.transform.position);
-        if(distanceToTarget > (2 * aggroRange)) { return; }
+        if(distanceToTarget > (2 * aggroRange)) 
+        {
+            currentTarget = null;
+            return; 
+        }
         var directionToTarget = Mathf.Sign(currentTarget.transform.position.x - transform.position.x);
         transform.Translate(moveSpeed * Time.deltaTime * directionToTarget, 0, 0);
     }
