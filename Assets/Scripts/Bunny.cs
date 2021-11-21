@@ -24,9 +24,10 @@ public class Bunny : MonoBehaviour
     GameObject currentTarget;
     [SerializeField] BunnyStates myState;
     float fidgetTimer;
-    float patrolTimer;
-    [SerializeField] float hopAnimationTime;
+    [SerializeField] float patrolTimer;
+    float hopAnimationTime;
     bool hopping = false;
+    [SerializeField] float hopTimer;
 
     // Start is called before the first frame update
     void Start()
@@ -39,6 +40,7 @@ public class Bunny : MonoBehaviour
         if (patrols)
         {
             patrolTimer = Random.Range(minPatrolTimer, maxPatrolTimer);
+            hopTimer = hopAnimationTime;
             AnimationClip[] clips = myAnimator.runtimeAnimatorController.animationClips;
             foreach (AnimationClip clip in clips)
             {
@@ -66,11 +68,11 @@ public class Bunny : MonoBehaviour
     private void Patrol()
     {
         if (!patrols) { return; }
-        if (myState == BunnyStates.Idle)
+        if (myState == BunnyStates.Idle || hopping)
         {
             if (patrolTimer <= 0)
             {
-                StartCoroutine(HopOnce());
+                HopOnce();
             }
             else
             {
@@ -83,11 +85,23 @@ public class Bunny : MonoBehaviour
             //CheckForWall();
         }
     }
-
-    private void OnTriggerExit2D(Collider2D collision)
+    private void HopOnce()
     {
-        transform.localScale = new Vector2(-(transform.localScale.x), 1f);
+        myState = BunnyStates.Move;
+        hopping = true;
+        if(hopTimer <= 0)
+        {
+            hopping = false;
+            hopTimer = hopAnimationTime;
+            patrolTimer = Random.Range(minPatrolTimer, maxPatrolTimer);
+            myState = BunnyStates.Idle;
+        }
+        else
+        {
+            hopTimer -= Time.deltaTime;
+        }
     }
+
 
 
     private void CheckForWall()
@@ -102,18 +116,12 @@ public class Bunny : MonoBehaviour
         { return; }
     }
 
-    private IEnumerator HopOnce()
+    private void OnTriggerExit2D(Collider2D collision)
     {
-        myState = BunnyStates.Move;
-        hopping = true;
-        yield return new WaitForSeconds(hopAnimationTime);
-        patrolTimer = Random.Range(minPatrolTimer, maxPatrolTimer);
-        myState = BunnyStates.Idle;
-        hopping = false;
+        transform.localScale = new Vector2(-(transform.localScale.x), 1f);
     }
 
-
-private void AnimateBunny()
+    private void AnimateBunny()
     {
         switch (myState)
         {
@@ -143,9 +151,9 @@ private void AnimateBunny()
     {
         if (hopping) { return; }
         if (currentTarget != null) { return; }
-        RaycastHit2D foundTarget = Physics2D.Raycast(transform.position, Vector2.left, awareRange);
-        if (foundTarget == false) 
-        {
+        RaycastHit2D foundTarget = Physics2D.Raycast(transform.position + new Vector3(awareRange,0f,0f), Vector2.left, awareRange * 2, 1<<LayerMask.NameToLayer("Player Characters"));
+        if (foundTarget == false) { return; }
+        /*{
             foundTarget = Physics2D.Raycast(transform.position, Vector2.right, awareRange);
             if (foundTarget == false) { return; } 
             else
@@ -156,7 +164,7 @@ private void AnimateBunny()
         else
         {
             transform.localScale = new Vector2(-1f, 1f);
-        }
+        }*/
 
         if (foundTarget.collider.gameObject.GetComponent<PlayerCharacter>() == null) { return; }
         else 
