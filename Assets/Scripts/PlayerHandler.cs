@@ -10,7 +10,7 @@ public class PlayerHandler : MonoBehaviour
     [SerializeField] float moveSpeed;
 
     //cached references
-    [SerializeField] GameObject activeCharacter;
+    [SerializeField] public GameObject activeCharacter;
     
     // Start is called before the first frame update
     void Start()

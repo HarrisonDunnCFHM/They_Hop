@@ -19,23 +19,23 @@ public class Bunny : MonoBehaviour
     [SerializeField] ParticleSystem bloodSplat;
 
     //cached references
+    PlayerHandler playerHandler;
     Rigidbody2D myRigidBody;
     Animator myAnimator;
-    SpriteRenderer myRenderer;
     GameObject currentTarget;
-    [SerializeField] BunnyStates myState;
+    BunnyStates myState;
     float fidgetTimer;
-    [SerializeField] float patrolTimer;
+    float patrolTimer;
     float hopAnimationTime;
     bool hopping = false;
-    [SerializeField] float hopTimer;
+    float hopTimer;
 
     // Start is called before the first frame update
     void Start()
     {
+        playerHandler = FindObjectOfType<PlayerHandler>();
         myRigidBody = GetComponent<Rigidbody2D>();
         myAnimator = GetComponent<Animator>();
-        myRenderer = GetComponent<SpriteRenderer>();
         myState = BunnyStates.Idle;
         fidgetTimer = Random.Range(minFidgetTimer, maxFidgetTimer);
         if (patrols) //set up patrol specific parameters
@@ -192,6 +192,7 @@ public class Bunny : MonoBehaviour
 
     private IEnumerator DeathAnimation(GameObject deadObject)
     {
+        playerHandler.activeCharacter = null;
         deadObject.GetComponent<SpriteRenderer>().enabled = false;
         deadObject.GetComponent<Collider2D>().enabled = false;
         deadObject.GetComponent<Rigidbody2D>().gravityScale = 0;
