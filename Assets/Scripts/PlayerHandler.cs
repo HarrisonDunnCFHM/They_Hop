@@ -40,11 +40,11 @@ public class PlayerHandler : MonoBehaviour
         if (moveDirection != 0)
         {
             activeCharacter.transform.localScale = new Vector2(moveDirection, 1f);
-            activeCharacter.GetComponent<PlayerCharacter>().myState = PlayerCharacter.CharacterStates.Run;
+            activeCharacter.GetComponent<PlayerCharacter>().myState = PlayerCharacter.CharacterState.Run;
         }
         else
         {
-            activeCharacter.GetComponent<PlayerCharacter>().myState = PlayerCharacter.CharacterStates.Idle;
+            activeCharacter.GetComponent<PlayerCharacter>().myState = PlayerCharacter.CharacterState.Idle;
         }
         activeCharacter.transform.Translate(moveSpeed * Time.deltaTime * moveDirection, 0, 0);
     }

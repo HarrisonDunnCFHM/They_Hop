@@ -144,10 +144,10 @@ public class Bunny : MonoBehaviour
         transform.localScale = new Vector2(-(Mathf.Sign(myRigidBody.velocity.x)), 1f);
     } //reverse direction if hitting a wall during a patrol
     
-    private void OnTriggerExit2D(Collider2D collision)
+    private void OnTriggerExit2D(Collider2D collision) //reverse direction if hitting a ledge using box collider parascope on front of object
     {
         transform.localScale = new Vector2(-(transform.localScale.x), 1f);
-    } //reverse direction if hitting a ledge using box collider parascope on front of object
+    } 
     
     private void CheckForCharacters()
     {
