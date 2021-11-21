@@ -79,14 +79,14 @@ public class Bunny : MonoBehaviour
         }
         if (myState == BunnyStates.Move)
         {
-            transform.Translate(moveSpeed * Time.deltaTime * ((myRenderer.flipX.GetHashCode() * 2) -1), 0, 0);
-            CheckForWall();
+            transform.Translate(moveSpeed * Time.deltaTime * -(transform.localScale.x), 0, 0);
+            //CheckForWall();
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        myRenderer.flipX = !myRenderer.flipX;
+        transform.localScale = new Vector2(-(transform.localScale.x), 1f);
     }
 
 
@@ -96,7 +96,7 @@ public class Bunny : MonoBehaviour
         if (foundWall == false) { return; }
         if (foundWall.collider.gameObject.layer == 8)
         {
-            myRenderer.flipX = !myRenderer.flipX;
+            transform.localScale = new Vector2(-(Mathf.Sign(myRigidBody.velocity.x)), 1f);
         }
         else
         { return; }
@@ -150,14 +150,14 @@ private void AnimateBunny()
             if (foundTarget == false) { return; } 
             else
             {
-                myRenderer.flipX = true;
+                transform.localScale = new Vector2(1f, 1f);
             }
         }
         else
         {
-            myRenderer.flipX = false;
+            transform.localScale = new Vector2(-1f, 1f);
         }
-        
+
         if (foundTarget.collider.gameObject.GetComponent<PlayerCharacter>() == null) { return; }
         else 
         {
@@ -179,19 +179,12 @@ private void AnimateBunny()
         {
             myState = BunnyStates.Alert;
         }
-        var directionToTarget = Mathf.Sign(currentTarget.transform.position.x - transform.position.x);
-        if (directionToTarget == 1)
-        {
-            myRenderer.flipX = true;
-        }
-        else if (directionToTarget == -1)
-        {
-            myRenderer.flipX = false;
-        }
+        var directionToTarget = Mathf.Sign(transform.position.x - currentTarget.transform.position.x );
+        transform.localScale = new Vector2(directionToTarget, 1f);
         if (distanceToTarget <= attackRange)
         {
             myState = BunnyStates.Move;
-            transform.Translate(moveSpeed * Time.deltaTime * directionToTarget, 0, 0);
+            transform.Translate(moveSpeed * Time.deltaTime * -directionToTarget, 0, 0);
         }
     }
 
