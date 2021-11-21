@@ -82,7 +82,7 @@ public class Bunny : MonoBehaviour
         if (myState == BunnyStates.Move)
         {
             transform.Translate(moveSpeed * Time.deltaTime * -(transform.localScale.x), 0, 0);
-            //CheckForWall();
+            CheckForWall();
         }
     }
     private void HopOnce()
@@ -106,14 +106,9 @@ public class Bunny : MonoBehaviour
 
     private void CheckForWall()
     {
-        RaycastHit2D foundWall = Physics2D.Raycast(transform.position, Vector2.left, 0.1f);
+        RaycastHit2D foundWall = Physics2D.Raycast(transform.position, Vector2.left, 0.1f, 1<<LayerMask.NameToLayer("Terrain"));
         if (foundWall == false) { return; }
-        if (foundWall.collider.gameObject.layer == 8)
-        {
-            transform.localScale = new Vector2(-(Mathf.Sign(myRigidBody.velocity.x)), 1f);
-        }
-        else
-        { return; }
+        transform.localScale = new Vector2(-(Mathf.Sign(myRigidBody.velocity.x)), 1f);
     }
 
     private void OnTriggerExit2D(Collider2D collision)
