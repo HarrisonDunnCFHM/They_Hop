@@ -16,6 +16,7 @@ public class Bunny : MonoBehaviour
     [SerializeField] bool patrols;
     [SerializeField] float minPatrolTimer = 0.5f;
     [SerializeField] float maxPatrolTimer = 1f;
+    [SerializeField] ParticleSystem bloodSplat;
 
     //cached references
     Rigidbody2D myRigidBody;
@@ -37,12 +38,12 @@ public class Bunny : MonoBehaviour
         myRenderer = GetComponent<SpriteRenderer>();
         myState = BunnyStates.Idle;
         fidgetTimer = Random.Range(minFidgetTimer, maxFidgetTimer);
-        if (patrols)
+        if (patrols) //set up patrol specific parameters
         {
             patrolTimer = Random.Range(minPatrolTimer, maxPatrolTimer);
             hopTimer = hopAnimationTime;
             AnimationClip[] clips = myAnimator.runtimeAnimatorController.animationClips;
-            foreach (AnimationClip clip in clips)
+            foreach (AnimationClip clip in clips) //getting the length of the hop animation so that only one hop plays during patrol movement
             {
                 switch(clip.name)
                 {
@@ -64,58 +65,7 @@ public class Bunny : MonoBehaviour
         MoveToCharacter();
         AnimateBunny();
     }
-
-    private void Patrol()
-    {
-        if (!patrols) { return; }
-        if (myState == BunnyStates.Idle || hopping)
-        {
-            if (patrolTimer <= 0)
-            {
-                HopOnce();
-            }
-            else
-            {
-                patrolTimer -= Time.deltaTime;
-            }
-        }
-        if (myState == BunnyStates.Move)
-        {
-            transform.Translate(moveSpeed * Time.deltaTime * -(transform.localScale.x), 0, 0);
-            CheckForWall();
-        }
-    }
-    private void HopOnce()
-    {
-        myState = BunnyStates.Move;
-        hopping = true;
-        if(hopTimer <= 0)
-        {
-            hopping = false;
-            hopTimer = hopAnimationTime;
-            patrolTimer = Random.Range(minPatrolTimer, maxPatrolTimer);
-            myState = BunnyStates.Idle;
-        }
-        else
-        {
-            hopTimer -= Time.deltaTime;
-        }
-    }
-
-
-
-    private void CheckForWall()
-    {
-        RaycastHit2D foundWall = Physics2D.Raycast(transform.position, Vector2.left, 0.1f, 1<<LayerMask.NameToLayer("Terrain"));
-        if (foundWall == false) { return; }
-        transform.localScale = new Vector2(-(Mathf.Sign(myRigidBody.velocity.x)), 1f);
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        transform.localScale = new Vector2(-(transform.localScale.x), 1f);
-    }
-
+    
     private void AnimateBunny()
     {
         switch (myState)
@@ -140,34 +90,72 @@ public class Bunny : MonoBehaviour
             default:
                 break;
         }
+    } //control animations based on state
+
+    private void Patrol() //if idle, patrol
+    {
+        if (!patrols) { return; }
+        if (myState == BunnyStates.Idle || hopping)
+        {
+            if (patrolTimer <= 0)
+            {
+                HopOnce();
+            }
+            else
+            {
+                patrolTimer -= Time.deltaTime;
+            }
+        }
+        if (myState == BunnyStates.Move)
+        {
+            transform.Translate(moveSpeed * Time.deltaTime * -(transform.localScale.x), 0, 0);
+            CheckForWall();
+        }
+    } 
+    
+    private void HopOnce() //hop once and put random time between hops during a patrol
+    {
+        myState = BunnyStates.Move;
+        hopping = true;
+        if(hopTimer <= 0)
+        {
+            hopping = false;
+            hopTimer = hopAnimationTime;
+            patrolTimer = Random.Range(minPatrolTimer, maxPatrolTimer);
+            myState = BunnyStates.Idle;
+        }
+        else
+        {
+            hopTimer -= Time.deltaTime;
+        }
     }
 
+    private void CheckForWall()
+    {
+        RaycastHit2D foundWall = Physics2D.Raycast(transform.position, Vector2.left, 0.1f, 1<<LayerMask.NameToLayer("Terrain"));
+        if (foundWall == false) { return; }
+        transform.localScale = new Vector2(-(Mathf.Sign(myRigidBody.velocity.x)), 1f);
+    } //reverse direction if hitting a wall during a patrol
+    
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        transform.localScale = new Vector2(-(transform.localScale.x), 1f);
+    } //reverse direction if hitting a ledge using box collider parascope on front of object
+    
     private void CheckForCharacters()
     {
         if (hopping) { return; }
         if (currentTarget != null) { return; }
         RaycastHit2D foundTarget = Physics2D.Raycast(transform.position + new Vector3(awareRange,0f,0f), Vector2.left, awareRange * 2, 1<<LayerMask.NameToLayer("Player Characters"));
         if (foundTarget == false) { return; }
-        /*{
-            foundTarget = Physics2D.Raycast(transform.position, Vector2.right, awareRange);
-            if (foundTarget == false) { return; } 
-            else
-            {
-                transform.localScale = new Vector2(1f, 1f);
-            }
-        }
-        else
-        {
-            transform.localScale = new Vector2(-1f, 1f);
-        }*/
-
         if (foundTarget.collider.gameObject.GetComponent<PlayerCharacter>() == null) { return; }
         else 
         {
             myState = BunnyStates.Alert;
             currentTarget = foundTarget.collider.gameObject; 
         }
-    }
+    } //raycast for characters on the Player Characters layer
+    
     private void MoveToCharacter()
     {
         if (currentTarget == null) { return; }
@@ -188,6 +176,17 @@ public class Bunny : MonoBehaviour
         {
             myState = BunnyStates.Move;
             transform.Translate(moveSpeed * Time.deltaTime * -directionToTarget, 0, 0);
+        }
+    }//if there's a target, be alert or move towards it, or forget it
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.layer == LayerMask.NameToLayer("Player Characters"))
+        {
+            currentTarget = null;
+            myState = BunnyStates.Idle;
+            Instantiate(bloodSplat, gameObject.transform);
+            Destroy(collision.gameObject);
         }
     }
 
