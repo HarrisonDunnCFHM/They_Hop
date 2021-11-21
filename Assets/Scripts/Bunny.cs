@@ -186,8 +186,16 @@ public class Bunny : MonoBehaviour
             currentTarget = null;
             myState = BunnyStates.Idle;
             Instantiate(bloodSplat, gameObject.transform);
-            Destroy(collision.gameObject);
+            StartCoroutine(DeathAnimation(collision.gameObject));
         }
     }
 
+    private IEnumerator DeathAnimation(GameObject deadObject)
+    {
+        deadObject.GetComponent<SpriteRenderer>().enabled = false;
+        deadObject.GetComponent<Collider2D>().enabled = false;
+        deadObject.GetComponent<Rigidbody2D>().gravityScale = 0;
+        yield return new WaitForSeconds(5f);
+        Destroy(deadObject);
+    }
 }

@@ -41,3 +41,18 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Terrain
+    uniqueID: 1724689757
+    locked: 0
+  - name: Characters
+    uniqueID: 4250631371
+    locked: 0
+  - name: Enemies
+    uniqueID: 4052162823
+    locked: 0
+  - name: Effects
+    uniqueID: 1049863375
+    locked: 0
+  - name: Darkness
+    uniqueID: 3901695263
+    locked: 0
