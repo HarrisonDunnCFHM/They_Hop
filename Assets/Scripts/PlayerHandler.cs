@@ -37,6 +37,15 @@ public class PlayerHandler : MonoBehaviour
     {
         if(activeCharacter == null) { return; }
         float moveDirection = Input.GetAxisRaw("Horizontal");
+        if (moveDirection != 0)
+        {
+            activeCharacter.transform.localScale = new Vector2(moveDirection, 1f);
+            activeCharacter.GetComponent<PlayerCharacter>().myState = PlayerCharacter.CharacterStates.Run;
+        }
+        else
+        {
+            activeCharacter.GetComponent<PlayerCharacter>().myState = PlayerCharacter.CharacterStates.Idle;
+        }
         activeCharacter.transform.Translate(moveSpeed * Time.deltaTime * moveDirection, 0, 0);
     }
 
