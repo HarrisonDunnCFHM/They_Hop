@@ -56,3 +56,6 @@ TagManager:
   - name: Darkness
     uniqueID: 3901695263
     locked: 0
+  - name: Darkness 2
+    uniqueID: 64596959
+    locked: 0

@@ -5,7 +5,7 @@ using UnityEngine;
 public class Bunny : MonoBehaviour
 {
 
-    private enum BunnyStates { Idle, Alert, Move };
+    private enum BunnyStates { Idle, Alert, Move, Bite, MonsterIdle, MonsterMove };
 
     //config params
     [SerializeField] float moveSpeed = 10f;
@@ -27,6 +27,7 @@ public class Bunny : MonoBehaviour
     float fidgetTimer;
     float patrolTimer;
     float hopAnimationTime;
+    float biteAnimationTime;
     bool hopping = false;
     float hopTimer;
 
@@ -43,12 +44,15 @@ public class Bunny : MonoBehaviour
             patrolTimer = Random.Range(minPatrolTimer, maxPatrolTimer);
             hopTimer = hopAnimationTime;
             AnimationClip[] clips = myAnimator.runtimeAnimatorController.animationClips;
-            foreach (AnimationClip clip in clips) //getting the length of the hop animation so that only one hop plays during patrol movement
+            foreach (AnimationClip clip in clips) //getting the length of animations so that only one plays during action
             {
                 switch(clip.name)
                 {
                     case "Bunny Hop":
                         hopAnimationTime = clip.length;
+                        break;
+                    case "Bunny Bite":
+                        biteAnimationTime = clip.length;
                         break;
                     default:
                         break;
@@ -86,6 +90,9 @@ public class Bunny : MonoBehaviour
                 break;
             case BunnyStates.Move:
                 myAnimator.Play("Bunny Hop");
+                break;
+            case BunnyStates.Bite:
+                myAnimator.Play("Bunny Bite");
                 break;
             default:
                 break;
@@ -184,8 +191,8 @@ public class Bunny : MonoBehaviour
         if(collision.gameObject.layer == LayerMask.NameToLayer("Player Characters"))
         {
             currentTarget = null;
-            myState = BunnyStates.Idle;
-            Instantiate(bloodSplat, gameObject.transform);
+            myState = BunnyStates.Bite;
+            transform.localScale = new Vector2(-(Mathf.Sign(myRigidBody.velocity.x)), 1f);
             StartCoroutine(DeathAnimation(collision.gameObject));
         }
     }
@@ -193,10 +200,13 @@ public class Bunny : MonoBehaviour
     private IEnumerator DeathAnimation(GameObject deadObject)
     {
         playerHandler.activeCharacter = null;
-        deadObject.GetComponent<SpriteRenderer>().enabled = false;
         deadObject.GetComponent<Collider2D>().enabled = false;
         deadObject.GetComponent<Rigidbody2D>().gravityScale = 0;
+        yield return new WaitForSeconds(biteAnimationTime);
+        deadObject.GetComponent<SpriteRenderer>().enabled = false;
+        Instantiate(bloodSplat, deadObject.transform.position, Quaternion.identity);
         yield return new WaitForSeconds(5f);
+        myState = BunnyStates.Idle;
         Destroy(deadObject);
     }
 }

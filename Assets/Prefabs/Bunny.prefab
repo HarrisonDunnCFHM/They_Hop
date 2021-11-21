@@ -77,7 +77,7 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: faad6e3034cd5ad4a8431db47922c135, type: 3}
-  m_Color: {r: 1, g: 0.4669811, b: 0.93532157, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -108,9 +108,6 @@ MonoBehaviour:
   minPatrolTimer: 0
   maxPatrolTimer: 2
   bloodSplat: {fileID: 4231528858156428032, guid: b815bccd0eff5c743a7e4ee5b7ee2fa5, type: 3}
-  myState: 0
-  patrolTimer: 0
-  hopTimer: 0
 --- !u!58 &6697667520381328023
 CircleCollider2D:
   m_ObjectHideFlags: 0
