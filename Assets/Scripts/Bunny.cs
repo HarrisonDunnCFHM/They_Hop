@@ -20,6 +20,7 @@ public class Bunny : MonoBehaviour
 
     //cached references
     PlayerHandler playerHandler;
+    Renderer myRenderer;
     Rigidbody2D myRigidBody;
     Animator myAnimator;
     GameObject currentTarget;
@@ -30,15 +31,18 @@ public class Bunny : MonoBehaviour
     float biteAnimationTime;
     bool hopping = false;
     float hopTimer;
+    float spriteWidth;
 
     // Start is called before the first frame update
     void Start()
     {
+        myRenderer = GetComponent<Renderer>();
         playerHandler = FindObjectOfType<PlayerHandler>();
         myRigidBody = GetComponent<Rigidbody2D>();
         myAnimator = GetComponent<Animator>();
         myState = BunnyStates.Idle;
         fidgetTimer = Random.Range(minFidgetTimer, maxFidgetTimer);
+        spriteWidth = myRenderer.bounds.size.x;
         if (patrols) //set up patrol specific parameters
         {
             patrolTimer = Random.Range(minPatrolTimer, maxPatrolTimer);
@@ -139,7 +143,7 @@ public class Bunny : MonoBehaviour
 
     private void CheckForWall()
     {
-        RaycastHit2D foundWall = Physics2D.Raycast(transform.position, Vector2.left, 0.1f, 1<<LayerMask.NameToLayer("Terrain"));
+        RaycastHit2D foundWall = Physics2D.Raycast(transform.position, Vector2.left, spriteWidth, 1<<LayerMask.NameToLayer("Terrain"));
         if (foundWall == false) { return; }
         transform.localScale = new Vector2(-(Mathf.Sign(myRigidBody.velocity.x)), 1f);
     } //reverse direction if hitting a wall during a patrol
@@ -192,13 +196,15 @@ public class Bunny : MonoBehaviour
         {
             currentTarget = null;
             myState = BunnyStates.Bite;
-            transform.localScale = new Vector2(-(Mathf.Sign(myRigidBody.velocity.x)), 1f);
+            //transform.localScale = new Vector2(-(Mathf.Sign(myRigidBody.velocity.x)), 1f);
             StartCoroutine(DeathAnimation(collision.gameObject));
         }
     }
 
     private IEnumerator DeathAnimation(GameObject deadObject)
     {
+        //var fullSpeed = moveSpeed;
+        //moveSpeed = 0f;
         playerHandler.activeCharacter = null;
         deadObject.GetComponent<Collider2D>().enabled = false;
         deadObject.GetComponent<Rigidbody2D>().gravityScale = 0;
@@ -206,6 +212,7 @@ public class Bunny : MonoBehaviour
         deadObject.GetComponent<SpriteRenderer>().enabled = false;
         Instantiate(bloodSplat, deadObject.transform.position, Quaternion.identity);
         yield return new WaitForSeconds(5f);
+        //moveSpeed = fullSpeed;
         myState = BunnyStates.Idle;
         Destroy(deadObject);
     }

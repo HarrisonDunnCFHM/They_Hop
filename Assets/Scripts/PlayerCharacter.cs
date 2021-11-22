@@ -55,7 +55,7 @@ public class PlayerCharacter : MonoBehaviour
                         myAnimator.Play("Strong Dead");
                         break;
                     case CharacterState.Throw:
-                        myAnimator.Play("Strong THrow");
+                        myAnimator.Play("Strong Throw");
                         break;
                     default:
                         break;
