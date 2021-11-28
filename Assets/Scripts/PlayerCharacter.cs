@@ -43,7 +43,10 @@ public class PlayerCharacter : MonoBehaviour
                         myAnimator.Play("Strong Idle");
                         break;
                     case CharacterState.Run:
-                        myAnimator.Play("Strong Run");
+                        if (!this.myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Strong Run"))
+                        {
+                            myAnimator.Play("Strong Run");
+                        }
                         break;
                     case CharacterState.Climb:
                         myAnimator.Play("Strong Climb");
