@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerCharacter : MonoBehaviour
 {
-    public enum CharacterState { Idle, Run, Climb, Jump, Fall, Dead, Throw, Crouch, Crawl };
+    public enum CharacterState { Idle, Run, Climb, Jump, Fall, Dead, Throw, Crouch, Crawl, Use };
 
     public enum CharacterClass { Strong, Small, Smart };
 
@@ -128,6 +128,9 @@ public class PlayerCharacter : MonoBehaviour
                         break;
                     case CharacterState.Dead:
                         myAnimator.Play("Smart Dead");
+                        break;
+                    case CharacterState.Use:
+                        myAnimator.Play("Smart Use");
                         break;
                     default:
                         break;
