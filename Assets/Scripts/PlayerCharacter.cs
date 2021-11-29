@@ -4,17 +4,20 @@ using UnityEngine;
 
 public class PlayerCharacter : MonoBehaviour
 {
-    public enum CharacterState { Idle, Run, Climb, Fall, Dead, Throw, Crouch, Crawl };
+    public enum CharacterState { Idle, Run, Climb, Jump, Fall, Dead, Throw, Crouch, Crawl };
 
     public enum CharacterClass { Strong, Small, Smart };
 
     //config params
-    [SerializeField] CharacterClass myClass;
+    public CharacterClass myClass;
 
     //cached references
     PlayerHandler playerHandler;
+    Rigidbody2D myRigidBody2D;
     public CharacterState myState;
     Animator myAnimator;
+    bool isActive;
+    public GameObject throwableFriend;
 
 
     // Start is called before the first frame update
@@ -23,6 +26,7 @@ public class PlayerCharacter : MonoBehaviour
         playerHandler = FindObjectOfType<PlayerHandler>();
         myAnimator = GetComponent<Animator>();
         myState = CharacterState.Idle;
+        myRigidBody2D = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -34,13 +38,24 @@ public class PlayerCharacter : MonoBehaviour
 
     private void AnimateCharacter()
     {
+        if (myRigidBody2D.velocity.y < 0f)
+        {
+            myState = PlayerCharacter.CharacterState.Fall;
+        }
+        else if (myRigidBody2D.velocity.y == 0f && !isActive)
+        {
+            myState = PlayerCharacter.CharacterState.Idle;
+        }
         switch (myClass)
         {
             case CharacterClass.Strong:
                 switch (myState)
                 {
                     case CharacterState.Idle:
-                        myAnimator.Play("Strong Idle");
+                        if (!this.myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Strong Land"))
+                        {
+                            myAnimator.Play("Strong Idle");
+                        }
                         break;
                     case CharacterState.Run:
                         if (!this.myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Strong Run"))
@@ -50,6 +65,9 @@ public class PlayerCharacter : MonoBehaviour
                         break;
                     case CharacterState.Climb:
                         myAnimator.Play("Strong Climb");
+                        break;
+                    case CharacterState.Jump:
+                        myAnimator.Play("Strong Jump");
                         break;
                     case CharacterState.Fall:
                         myAnimator.Play("Strong Fall");
@@ -121,6 +139,38 @@ public class PlayerCharacter : MonoBehaviour
 
     public void OnMouseDown()
     {
+        var allCharacters = FindObjectsOfType<PlayerCharacter>();
+        foreach (PlayerCharacter playerChar in allCharacters)
+        {
+            playerChar.isActive = false;
+            playerChar.gameObject.layer = LayerMask.NameToLayer("Player Characters");
+        }
+        isActive = true;
         playerHandler.SelectCharacter(gameObject);
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (myRigidBody2D.velocity.y < 0 && collision.gameObject.layer == LayerMask.NameToLayer("Terrain"))
+        {
+            myAnimator.Play("Strong Land");
+            myState = CharacterState.Idle;
+            
+        }
+        if (collision.gameObject.GetComponent<PlayerCharacter>() != null)
+        {
+            throwableFriend = collision.gameObject;
+          
+        }
+    }
+
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.GetComponent<PlayerCharacter>() != null)
+        {
+            throwableFriend = null;
+        }
+    }
+
 }

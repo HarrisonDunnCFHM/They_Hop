@@ -74,7 +74,7 @@ public class Bunny : MonoBehaviour
         AnimateBunny();
     }
     
-    private void AnimateBunny()
+    private void AnimateBunny() //control animations based on state
     {
         switch (myState)
         {
@@ -101,7 +101,7 @@ public class Bunny : MonoBehaviour
             default:
                 break;
         }
-    } //control animations based on state
+    } 
 
     private void Patrol() //if idle, patrol
     {
@@ -196,23 +196,23 @@ public class Bunny : MonoBehaviour
         {
             currentTarget = null;
             myState = BunnyStates.Bite;
-            //transform.localScale = new Vector2(-(Mathf.Sign(myRigidBody.velocity.x)), 1f);
             StartCoroutine(DeathAnimation(collision.gameObject));
         }
     }
 
     private IEnumerator DeathAnimation(GameObject deadObject)
     {
-        //var fullSpeed = moveSpeed;
-        //moveSpeed = 0f;
-        playerHandler.activeCharacter = null;
+        if (playerHandler.activeCharacter == deadObject)
+        {
+            playerHandler.activeCharacter = null;
+        }
         deadObject.GetComponent<Collider2D>().enabled = false;
+        deadObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
         deadObject.GetComponent<Rigidbody2D>().gravityScale = 0;
         yield return new WaitForSeconds(biteAnimationTime);
         deadObject.GetComponent<SpriteRenderer>().enabled = false;
         Instantiate(bloodSplat, deadObject.transform.position, Quaternion.identity);
         yield return new WaitForSeconds(5f);
-        //moveSpeed = fullSpeed;
         myState = BunnyStates.Idle;
         Destroy(deadObject);
     }
