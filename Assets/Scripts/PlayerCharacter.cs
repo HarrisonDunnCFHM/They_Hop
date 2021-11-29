@@ -17,7 +17,7 @@ public class PlayerCharacter : MonoBehaviour
     public CharacterState myState;
     Animator myAnimator;
     bool isActive;
-    public GameObject throwableFriend;
+    public PlayerCharacter[] throwableFriends;
 
 
     // Start is called before the first frame update
@@ -27,6 +27,7 @@ public class PlayerCharacter : MonoBehaviour
         myAnimator = GetComponent<Animator>();
         myState = CharacterState.Idle;
         myRigidBody2D = GetComponent<Rigidbody2D>();
+        throwableFriends = FindObjectsOfType<PlayerCharacter>();
     }
 
     // Update is called once per frame
@@ -155,13 +156,8 @@ public class PlayerCharacter : MonoBehaviour
         {
             myAnimator.Play("Strong Land");
             myState = CharacterState.Idle;
-            
         }
-        if (collision.gameObject.GetComponent<PlayerCharacter>() != null)
-        {
-            throwableFriend = collision.gameObject;
-          
-        }
+ 
     }
 
 
@@ -169,7 +165,7 @@ public class PlayerCharacter : MonoBehaviour
     {
         if (collision.gameObject.GetComponent<PlayerCharacter>() != null)
         {
-            throwableFriend = null;
+            throwableFriends = null;
         }
     }
 

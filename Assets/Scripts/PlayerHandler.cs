@@ -11,9 +11,9 @@ public class PlayerHandler : MonoBehaviour
     [SerializeField] float jumpSpeed = 10f;
 
     //cached references
-    [SerializeField] public GameObject activeCharacter;
+    public GameObject activeCharacter;
+    GameObject thrownCharacter;
 
-    
     // Start is called before the first frame update
     void Start()
     {
@@ -63,13 +63,22 @@ public class PlayerHandler : MonoBehaviour
                 }
                 else //throw if not moving and have a friend nearby
                 {
-                    if (activeCharacter.GetComponent<PlayerCharacter>().throwableFriend != null)
+                    if (activeCharacter.GetComponent<PlayerCharacter>().throwableFriends != null)
                     {
                         var throwDirection = activeCharacter.transform.localScale.x;
-                        GameObject thrownCharacter = activeCharacter.GetComponent<PlayerCharacter>().throwableFriend;
+                        foreach (PlayerCharacter friend in activeCharacter.GetComponent<PlayerCharacter>().throwableFriends)
+                        {
+                            Vector2 distToFriend = activeCharacter.transform.position - friend.transform.position;
+                            float sqrMagToFriend = Vector2.SqrMagnitude(distToFriend);
+                            if (sqrMagToFriend != 0 && sqrMagToFriend <= activeCharacter.GetComponent<Renderer>().bounds.size.x)
+                            {
+                                thrownCharacter = friend.gameObject;
+                            }
+                        }
+                        if (thrownCharacter == null) { return; }
                         thrownCharacter.GetComponent<Rigidbody2D>().velocity = new Vector2(jumpSpeed * throwDirection * 0.5f, jumpSpeed);
                         thrownCharacter.transform.localScale = new Vector2(throwDirection, 1);
-                        activeCharacter.GetComponent<PlayerCharacter>().throwableFriend = null;
+                        thrownCharacter = null;
                     }
                 }
             }
